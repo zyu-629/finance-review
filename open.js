@@ -13,7 +13,7 @@
   }
   const settings=new URLSearchParams(location.hash.slice(1));
   const requested=settings.get('unlock');
-  const target=settings.get('view')==='settings'?'#settings':'#study';
+  const target=settings.get('view')==='settings'?'#settings':'#overview';
 
   function secretFromSession() {
     try { return sessionStorage.getItem(slot); }
@@ -40,7 +40,7 @@
       buffer.set(cipher,iv.length);
       return base64encode(buffer);
     }
-    const response=await fetch('study.bin',{referrerPolicy:'no-referrer'});
+    const response=await fetch('study-v2.bin',{referrerPolicy:'no-referrer'});
     if(!response.ok) throw new Error('复习资料暂不可用，请稍后重试。');
     let markup;
     try { markup=plain.decode(await decrypt(new Uint8Array(await response.arrayBuffer()),'study-v1')); }
@@ -52,6 +52,13 @@
     permit(code);
     const pageUrl=location.origin+location.pathname;
     window.FinanceAccess=Object.freeze({
+      image:async id=>{
+        if(!/^(?:F[123]|W|[0-9]{1,2})-[1-9][0-9]?$/.test(id)) throw new Error('页码无效');
+        const reply=await fetch('screens/v1/'+id+'.bin',{referrerPolicy:'no-referrer'});
+        if(!reply.ok) throw new Error('原页不可用');
+        const buffer=await decrypt(new Uint8Array(await reply.arrayBuffer()),'source-image-v1:'+id);
+        return URL.createObjectURL(new Blob([buffer],{type:'image/webp'}));
+      },
       seal, open:async (sealed,purpose)=>plain.decode(await decrypt(base64decode(sealed),purpose)),
       link:()=>pageUrl+'#unlock='+code
     });
