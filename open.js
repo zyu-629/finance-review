@@ -40,7 +40,7 @@
       buffer.set(cipher,iv.length);
       return base64encode(buffer);
     }
-    const response=await fetch('study-v8.bin',{referrerPolicy:'no-referrer'});
+    const response=await fetch('study-v9.bin',{referrerPolicy:'no-referrer'});
     if(!response.ok) throw new Error('复习资料暂不可用，请稍后重试。');
     let markup;
     try { markup=plain.decode(await decrypt(new Uint8Array(await response.arrayBuffer()),'study-v1')); }
@@ -54,7 +54,8 @@
     window.FinanceAccess=Object.freeze({
       image:async id=>{
         if(!/^(?:F[123]|W|[0-9]{1,2})-[1-9][0-9]?$/.test(id)) throw new Error('页码无效');
-        const reply=await fetch('screens/v1/'+id+'.bin',{referrerPolicy:'no-referrer'});
+        const revision=id==='W-15'?'?v=2':'';
+        const reply=await fetch('screens/v1/'+id+'.bin'+revision,{referrerPolicy:'no-referrer'});
         if(!reply.ok) throw new Error('原页不可用');
         const buffer=await decrypt(new Uint8Array(await reply.arrayBuffer()),'source-image-v1:'+id);
         return URL.createObjectURL(new Blob([buffer],{type:'image/webp'}));
