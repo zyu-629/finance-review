@@ -40,7 +40,7 @@
       buffer.set(cipher,iv.length);
       return base64encode(buffer);
     }
-    const response=await fetch('study-v6.bin',{referrerPolicy:'no-referrer'});
+    const response=await fetch('study-v7.bin',{referrerPolicy:'no-referrer'});
     if(!response.ok) throw new Error('复习资料暂不可用，请稍后重试。');
     let markup;
     try { markup=plain.decode(await decrypt(new Uint8Array(await response.arrayBuffer()),'study-v1')); }
